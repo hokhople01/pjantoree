@@ -4,55 +4,56 @@ import { products } from '../../pages/Home/Home';
 import './Carousel.css';
 
 const Carousel = () => {
-  const [currentSlide, setCurrentSlide] = useState(1); 
+  const [currentSlide, setCurrentSlide] = useState(0); 
   const [isTransitioning, setIsTransitioning] = useState(false);
   const navigate = useNavigate();
   const timeoutRef = useRef(null);
 
   const slides = [
-    { ...products[products.length - 1], id: 'clone-last' }, 
     ...products,
-    { ...products[0], id: 'clone-first' } 
+    ...products,
+    ...products,
+    ...products,
+    ...products,
+    ...products,
+    ...products
   ];
 
   const goToSlide = (index) => {
     if (isTransitioning) return;
+    setIsTransitioning(true);
     setCurrentSlide(index);
   };
 
   const goToPrevious = () => {
     if (isTransitioning) return;
-    setCurrentSlide((prev) => prev - 1);
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => {
+      if (prev === 0) {
+        return slides.length - 1;
+      }
+      return prev - 1;
+    });
   };
 
   const goToNext = () => {
     if (isTransitioning) return;
-    setCurrentSlide((prev) => prev + 1);
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => {
+      if (prev === slides.length - 1) {
+        return 0;
+      }
+      return prev + 1;
+    });
   };
 
   const handleImageClick = (productId) => {
-    if (productId.toString().startsWith('clone-')) {
-      const originalId = productId === 'clone-first' ? products[0].id : products[products.length - 1].id;
-      navigate(`/product/${originalId}`);
-    } else {
-      navigate(`/product/${productId}`);
-    }
+    navigate(`/product/${productId}`);
   };
 
   useEffect(() => {
-    if (isTransitioning) return;
-
     const handleTransitionEnd = () => {
       setIsTransitioning(false);
-      
-      if (currentSlide === 0) {
-        setIsTransitioning(true);
-        setCurrentSlide(products.length);
-      }
-      else if (currentSlide === slides.length - 1) {
-        setIsTransitioning(true);
-        setCurrentSlide(1);
-      }
     };
 
     const carouselContainer = document.querySelector('.carousel-container');
@@ -60,7 +61,7 @@ const Carousel = () => {
       carouselContainer.addEventListener('transitionend', handleTransitionEnd);
       return () => carouselContainer.removeEventListener('transitionend', handleTransitionEnd);
     }
-  }, [currentSlide, isTransitioning, slides.length, products.length]);
+  }, []);
 
   useEffect(() => {
     const startAutoPlay = () => {
@@ -81,11 +82,7 @@ const Carousel = () => {
     };
   }, [isTransitioning]);
 
-  useEffect(() => {
-    setIsTransitioning(true);
-    const timer = setTimeout(() => setIsTransitioning(false), 100);
-    return () => clearTimeout(timer);
-  }, [currentSlide]);
+  const currentRealSlide = currentSlide % products.length;
 
   return (
     <div className="carousel">
@@ -93,7 +90,7 @@ const Carousel = () => {
         className="carousel-container"
         style={{ 
           transform: `translateX(-${currentSlide * 100}%)`,
-          transition: isTransitioning ? 'transform 1.5s ease-in-out' : 'none'
+          transition: isTransitioning ? 'transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)' : 'none'
         }}
       >
         {slides.map((product, index) => (
@@ -118,8 +115,8 @@ const Carousel = () => {
         {products.map((_, index) => (
           <button
             key={index}
-            className={`carousel-indicator ${index === (currentSlide - 1) % products.length ? 'active' : ''}`}
-            onClick={() => goToSlide(index + 1)}
+            className={`carousel-indicator ${index === currentRealSlide ? 'active' : ''}`}
+            onClick={() => goToSlide(index)}
           />
         ))}
       </div>

@@ -12,7 +12,7 @@
   display: flex;
   width: 100%;
   height: 100%;
-  transition: transform 1.5s ease-in-out;
+  transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 12px;
 }
 
@@ -22,6 +22,7 @@
   position: relative;
   cursor: pointer;
   border-radius: 12px;
+  flex-shrink: 0;
 }
 
 .carousel-slide img {
@@ -162,8 +163,6 @@
 .carousel-image:hover img {
   transform: scale(1.05);
 }
-
-
 
 .carousel-indicators {
   display: flex;
