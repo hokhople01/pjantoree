@@ -10,37 +10,37 @@ import Carousel from '../Carousel/Carousel';
 const Search = () => {
     const [search, setSearch] = useState('');
     const [data, setData] = useState(products);
+    const [isSearchActive, setIsSearchActive] = useState(false);
     const { addToCart } = useCart();
     const navigate = useNavigate();
     const [priceFilter, setPriceFilter] = useState('all');
-    const handleSearch = (e) => {
-      const keyword = e.target.value;
-      setSearch(keyword);
-  
+    const handleInputChange = (e) => {
+      setSearch(e.target.value);
+    };
+
+    const handleSearch = () => {
+      setIsSearchActive(true);
       const filtered = products.filter(item =>
-        item.name.toLowerCase().includes(keyword.toLowerCase())
+        item.name.toLowerCase().includes(search.toLowerCase())
       );
   
       setData(filtered);
       console.log(filtered);
     };
 
+    const handleKeyPress = (e) => {
+      if (e.key === 'Enter') {
+        handleSearch();
+      }
+    };
+
     const handlePriceFilterChange = (e) => {
       setPriceFilter(e.target.value);
     };
     
-    // Kết hợp cả search và price filter
     const getFilteredProducts = () => {
-      let filtered = products;
+      let filtered = isSearchActive ? data : products;
       
-      // Filter theo search keyword
-      if (search) {
-        filtered = filtered.filter(item =>
-          item.name.toLowerCase().includes(search.toLowerCase())
-        );
-      }
-      
-      // Filter theo price
       if (priceFilter === 'under500') {
         filtered = filtered.filter(item => item.price < 500000);
       } else if (priceFilter === '500to1000') {
@@ -61,27 +61,29 @@ const Search = () => {
     return (
       <div className="porduct-box">
         <div className="search-container">
+          <div className="search">
+                  <input
+                  type="text"
+                  placeholder="Tìm sản phẩm..."
+                  value={search}
+                  onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
+                  />
+                  <button className="search-btn" onClick={handleSearch}>
+                    🔍
+                  </button>
+              </div>
+              
+          </div>
         <Carousel />
-
-            <div className="search">
-                <input
-                type="text"
-                placeholder="Tìm sản phẩm..."
-                value={search}
-                onChange={handleSearch}
-                />
-            </div>
-            <div className="price-filter">
-                <select value={priceFilter} onChange={handlePriceFilterChange}>
-                    <option value="all">Tất cả</option>
-                    <option value="under500">Dưới 500.000</option>
-                    <option value="500to1000">500.000 - 1.000.000</option>
-                    <option value="over1000">Trên 1.000.000</option>
-                </select>
-            </div>
-        </div>
-        
-        
+        <div className="price-filter">
+                  <select value={priceFilter} onChange={handlePriceFilterChange}>
+                      <option value="all">Tất cả</option>
+                      <option value="under500">Dưới 500.000</option>
+                      <option value="500to1000">500.000 - 1.000.000</option>
+                      <option value="over1000">Trên 1.000.000</option>
+                  </select>
+              </div>
         <div className="products-grid">
             {filteredProducts.map(item => (
                 <div key={item.id} className="product-card">
@@ -108,6 +110,7 @@ const Search = () => {
             ))}
         </div>
         </div>
+        
     );
 };
 

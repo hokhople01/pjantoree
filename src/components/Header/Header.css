@@ -21,6 +21,22 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.header-login {
+  display: flex;
+  justify-content: flex-end;   
+  gap: 1rem;                   
+  margin: 0;
+  width: 100%;
+}
+
+.login-btn, .register-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+
 .header-nav {
   display: flex;
   align-items: center;

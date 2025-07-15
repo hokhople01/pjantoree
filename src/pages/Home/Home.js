@@ -60,8 +60,8 @@ const Home = () => {
     <div className="home">
       <div className="container">
         <h1 className="page-title">Sản phẩm
-        </h1>
-        <Search />
+        </h1>        <Search />
+
       </div>
     </div>
   );
